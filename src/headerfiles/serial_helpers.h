@@ -1,0 +1,1 @@
+int kmp_search_serial(char *string, char *pattern, int *table);
