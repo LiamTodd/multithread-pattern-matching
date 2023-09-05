@@ -8,16 +8,16 @@
 
 int main(){
 
-    omp_set_num_threads(8);
+    // char data_file_name[MAX_FILE_NAME];
+    // printf("Enter a filename to load a dataset from: ");
+    // scanf("%s", data_file_name);
+    char *data_file_name = "datasets/large.txt";
 
-    char data_file_name[MAX_FILE_NAME];
-    printf("Enter a filename to load a dataset from: ");
-    scanf("%s", data_file_name);
-
-    char patterns_file_name[MAX_FILE_NAME];
-    printf("Enter a filename to load search terms from: ");
-    // skip the newline char from previous read
-    scanf("\n%s", patterns_file_name);
+    // char patterns_file_name[MAX_FILE_NAME];
+    // printf("Enter a filename to load search terms from: ");
+    // // skip the newline char from previous read
+    // scanf("\n%s", patterns_file_name);
+    char *patterns_file_name = "query_lists/large.txt";
 
     // set up clock
     struct timespec start, end, start_read, end_read, start_kmp_table, end_kmp_table, start_match, end_match, start_print, end_print; 
@@ -72,11 +72,8 @@ int main(){
     // allow nested parallelism due to parallelism inside kmp_search
     omp_set_dynamic(0);
     omp_set_nested(1);
-    printf("before %i\n", omp_get_num_threads());
     # pragma omp parallel for private(i), shared(match_counts, file_content, patterns, lps_tables)
     for (i=0; i<num_patterns; i++){
-    printf("after %i\n", omp_get_num_threads());
-
         match_counts[i] = kmp_search_parallel(file_content, patterns[i], lps_tables[i]);
         free(lps_tables[i]);
     }
