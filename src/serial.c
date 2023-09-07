@@ -17,28 +17,34 @@ int main(){
     scanf("\n%s", patterns_file_name);
 
     // set up clock
-    struct timespec start, end, start_read, end_read, start_kmp_table, end_kmp_table, start_match, end_match, start_print, end_print; 
-	double time_taken, time_taken_read, time_taken_kmp_table, time_taken_match, time_taken_print;
+    struct timespec start, end, start_read_patterns, end_read_patterns, start_read_string, end_read_string, start_kmp_table, end_kmp_table, start_match, end_match, start_print, end_print; 
+	double time_taken, time_taken_read_patterns, time_taken_read_string, time_taken_kmp_table, time_taken_match, time_taken_print;
 	clock_gettime(CLOCK_MONOTONIC, &start); 
 
     // read file content
-    clock_gettime(CLOCK_MONOTONIC, &start_read);
+    clock_gettime(CLOCK_MONOTONIC, &start_read_string);
     char *file_content;
     int read_file_into_string_success = read_file_into_string(&file_content, data_file_name);
     if (read_file_into_string_success == -1){
         // error message printed in function
         return 1;
     }
+    clock_gettime(CLOCK_MONOTONIC, &end_read_string); 
+	time_taken_read_string = (end_read_string.tv_sec - start_read_string.tv_sec) * 1e9; 
+    time_taken_read_string = (time_taken_read_string + (end_read_string.tv_nsec - start_read_string.tv_nsec)) * 1e-9; 
 
+    clock_gettime(CLOCK_MONOTONIC, &start_read_patterns);
     char patterns[MAX_PATTERNS][MAX_PATTERN_LENGTH];
     int num_patterns = read_file_into_patterns_array(patterns, patterns_file_name);
     if (num_patterns == -1){
         // error message printed in function
         return 1;
     }
-	clock_gettime(CLOCK_MONOTONIC, &end_read); 
-	time_taken_read = (end_read.tv_sec - start_read.tv_sec) * 1e9; 
-    time_taken_read = (time_taken_read + (end_read.tv_nsec - start_read.tv_nsec)) * 1e-9; 
+    clock_gettime(CLOCK_MONOTONIC, &end_read_patterns); 
+	time_taken_read_patterns = (end_read_patterns.tv_sec - start_read_patterns.tv_sec) * 1e9; 
+    time_taken_read_patterns = (time_taken_read_patterns + (end_read_patterns.tv_nsec - start_read_patterns.tv_nsec)) * 1e-9; 
+
+
 
     // construct kmp table for each pattern
 	clock_gettime(CLOCK_MONOTONIC, &start_kmp_table);
@@ -84,7 +90,8 @@ int main(){
 
     // display results
     printf("\nTimes:\n");
-	printf("File read time: %lf\n", time_taken_read);
+	printf("String read time: %lf\n", time_taken_read_string);
+	printf("Pattern read time: %lf\n", time_taken_read_patterns);
 	printf("Construct partial match tables time: %lf\n", time_taken_kmp_table);
 	printf("Match finding time: %lf\n", time_taken_match);
 	printf("Printing time: %lf\n", time_taken_print);

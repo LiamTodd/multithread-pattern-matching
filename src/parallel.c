@@ -72,10 +72,8 @@ int main(){
     // allow nested parallelism due to parallelism inside kmp_search
     omp_set_dynamic(0);
     omp_set_nested(1);
-    printf("before %i\n", omp_get_num_threads());
     # pragma omp parallel for private(i), shared(match_counts, file_content, patterns, lps_tables)
     for (i=0; i<num_patterns; i++){
-    printf("after %i\n", omp_get_num_threads());
 
         match_counts[i] = kmp_search_parallel(file_content, patterns[i], lps_tables[i]);
         free(lps_tables[i]);
